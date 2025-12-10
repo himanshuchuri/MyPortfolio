@@ -1,4 +1,5 @@
 // src/components/Experience.jsx
+import { useEffect, useRef, useState } from "react";
 const experiences = [
   {
     role: "Programmer Analyst",
@@ -81,6 +82,51 @@ const experiences = [
 ];
 
 export default function Experience() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const tabListRef = useRef(null);
+  const activeExperience = experiences[activeIndex];
+
+  useEffect(() => {
+    const list = tabListRef.current;
+    if (!list) return;
+
+    const handleScroll = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = list;
+      const maxScroll = scrollWidth - clientWidth;
+      if (maxScroll <= 0) {
+        setScrollIndex(0);
+        return;
+      }
+      const progress = scrollLeft / maxScroll;
+      const index = Math.round(progress * (experiences.length - 1));
+      setScrollIndex(index);
+    };
+
+    handleScroll();
+    list.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      list.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    setScrollIndex((prev) => (prev !== activeIndex ? activeIndex : prev));
+  }, [activeIndex]);
+
+  const handleActivate = (index) => {
+    setActiveIndex(index);
+    const tab = document.getElementById(`experience-tab-${index}`);
+    if (tab) {
+      tab.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  };
+
   return (
     <section id="experience" className="section">
       <div className="section-header">
@@ -92,32 +138,69 @@ export default function Experience() {
         </p>
       </div>
 
-      <div className="experience-timeline">
-        {experiences.map((exp, index) => (
+      <div className="experience-tabs">
+        <div
+          className="experience-tab-list"
+          role="tablist"
+          aria-label="Work experience"
+          ref={tabListRef}
+        >
+          {experiences.map((exp, index) => (
+            <button
+              key={exp.role + exp.company}
+              type="button"
+              className={`experience-tab ${
+                index === activeIndex ? "is-active" : ""
+              }`}
+              onClick={() => handleActivate(index)}
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-controls={`experience-panel-${index}`}
+              id={`experience-tab-${index}`}
+            >
+              <span className="experience-tab-role">{exp.role}</span>
+              <span className="experience-tab-company">{exp.company}</span>
+              <span className="experience-tab-period">{exp.period}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="experience-pagination" aria-hidden="true">
+          {experiences.map((_, index) => (
+            <button
+              key={`dot-${index}`}
+              type="button"
+              className={`experience-dot${
+                index === scrollIndex ? " is-scroll" : ""
+              }${index === activeIndex ? " is-active" : ""}`}
+              onClick={() => {
+                handleActivate(index);
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="experience-tab-panels">
           <article
-            key={exp.role + exp.company}
-            className={`experience-timeline-item ${
-              index % 2 === 0 ? "is-left" : "is-right"
-            }`}
+            className="experience-panel"
+            role="tabpanel"
+            id={`experience-panel-${activeIndex}`}
+            aria-labelledby={`experience-tab-${activeIndex}`}
           >
-            <div className="experience-timeline-line" />
-            <div className="experience-timeline-dot" />
-            <div className="experience-card">
-              <header className="experience-header">
-                <h3 className="experience-role">{exp.role}</h3>
-                <p className="experience-company">{exp.company}</p>
-              </header>
-              <p className="experience-meta">
-                {exp.location} · {exp.period}
-              </p>
-              <ul className="experience-points">
-                {exp.bullets.map((b) => (
-                  <li key={b}>{b}</li>
-                ))}
-              </ul>
-            </div>
+            <header className="experience-header">
+              <h3 className="experience-role">{activeExperience.role}</h3>
+              <p className="experience-company">{activeExperience.company}</p>
+            </header>
+            <p className="experience-meta">
+              {activeExperience.location} · {activeExperience.period}
+            </p>
+            <ul className="experience-points">
+              {activeExperience.bullets.map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
           </article>
-        ))}
+        </div>
       </div>
     </section>
   );
