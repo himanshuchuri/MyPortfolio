@@ -671,13 +671,13 @@ body {
 
 .hero-slot-2 {
   top: 40%;
-  right: -6%;
+  right: -1%;
   animation-duration: 7.4s;
 }
 
 .hero-slot-3 {
-  bottom: 20%;
-  right: -4%;
+  bottom: 28%;
+  right: 4%;
   animation-duration: 6.8s;
   animation-name: float3;
 }
@@ -689,21 +689,21 @@ body {
 }
 
 .hero-slot-5 {
-  bottom: 12%;
+  bottom: 9%;
   left: 12%;
   animation-duration: 6.4s;
   animation-name: float2;
 }
 
 .hero-slot-6 {
-  bottom: 22%;
-  left: -4%;
+  bottom: 26%;
+  left: -2%;
   animation-duration: 7.6s;
 }
 
 .hero-slot-7 {
   top: 40%;
-  left: -6%;
+  left: -3%;
   animation-duration: 6.9s;
   animation-name: float3;
 }
@@ -721,7 +721,7 @@ body {
 }
 
 .hero-slot-10 {
-  top: 78%;
+  top: 82%;
   left: 40%;
   animation-duration: 6.7s;
 }
